@@ -3,23 +3,35 @@
 
 using namespace std;
 
+struct Times
+{
+    int contador = 0;
+    int time;
+    int promedio = 0;
+};
+
 struct corredor
 {
     char nombre[20];
     int nasignado;
-    int Time;
-
-    corredor *sig, *sigT;
+    Times estruc2;
+    corredor *sig;
 };
 
-corredor *cab, *aux, *aux2, *cabT, *auxT, *auxT2;
+corredor *cab, *aux, *aux2;
 
 int numero;
+int contador = 0;
+ 
+
+
+
+// REGISTRAR ATLETA
+
 int registrar()
 {
 
-    if (cab == NULL)
-    {
+    if (cab == NULL){
 
         cab = (struct corredor *)malloc(sizeof(struct corredor));
 
@@ -30,6 +42,8 @@ int registrar()
         cin >> cab->nasignado;
 
         cab->sig = NULL;
+
+
     }
     else
     {
@@ -58,56 +72,80 @@ int registrar()
 int correr()
 {
 
-    if (cabT == NULL)
+    
+
+    aux = (struct corredor *)malloc(sizeof(struct corredor));
+
+    aux->sig = NULL;
+    aux2 = cab;
+    int camisa;
+    bool encontrado = false;
+    cout << "INGRESE NUMERO DE CAMISETA DEL CORREDOR: ";
+    cin >> camisa;
+
+    
+
+    for (aux2 = cab; aux2 != NULL; aux2 = aux2->sig)
     {
+        if (camisa == aux2->nasignado)
+        {
+            if (aux2->estruc2.promedio == 1)
+            {
+               cout<<"ESTE ATLETA NO PUEDE REGISTRAR MAS CARRERAS";
+                encontrado = true;
+                 break;
+            }
+            
+            if(aux2->estruc2.contador == 555){
+                int segundotime;
+                 cout << "INGRESE TIEMPO: ";
+                cin >> segundotime;
+                int resultado =  (aux2->estruc2.time + segundotime) / 2;
+                aux2->estruc2.time = resultado;
+                aux2->estruc2.promedio = 1;
+                 encontrado = true;
+                  aux2 = aux = NULL;
+                cout << "Registro Exitoso";
 
-        cabT = (struct corredor *)malloc(sizeof(struct corredor));
+                break;
+            }
 
-        cout << "INGRESE TIEMPO: ";
-        cin >> cabT->Time;
+                cout << "INGRESE TIEMPO: ";
+                cin >> aux2->estruc2.time;
+                encontrado = true;
+                aux2->estruc2.contador = 555;
+                aux2 = aux = NULL;
 
-        cabT->sigT = NULL;
+                cout << "Registro Exitoso";
+
+                break;
+          
+            
+        }
     }
-    else
+
+    if (encontrado == false)
     {
-        auxT = (struct corredor *)malloc(sizeof(struct corredor));
-
-        cout << "INGRESE TIEMPO: ";
-        cin >> auxT->Time;
-
-        auxT->sigT = NULL;
-        auxT2 = cabT;
-
-        while (auxT2->sigT != NULL)
-
-            auxT2 = auxT2->sigT;
-        auxT2->sigT = auxT;
-        auxT2 = auxT = NULL;
-        free(auxT);
-        free(auxT2);
+        printf("No se encontro el atleta");
     }
     return 0;
 }
 
 int mostrar()
 {
-int c =1;
-int i = 1;
-    cout << " \t\t\tLista de tiempo de los participante " << endl;
+    
+
+
+    int i = 1;
+    int j = 0;
+    cout << " \t\t\tLista de participante " << endl;
     cout << "\n";
     cout << "\n";
 
-    for (auxT = cabT; auxT != NULL; auxT = auxT->sigT)
-    {
-
-        cout << "\t\t\t\t\t " << c++ << ".Tiempo"
-                                        ":  "
-             << auxT->Time << endl;
-    }
     for (aux = cab; aux != NULL; aux = aux->sig)
     {
-
-        cout << i++ << ".corredor  camisa #: " << aux->nasignado << " Nombre: " << aux->nombre << endl;
+        cout << i++ << ".corredor  camisa #" << aux->nasignado << " Nombre: " << aux->nombre << "  Tiempo: " << aux->estruc2.time << endl;
+        j++;
     }
 
     return 0;
@@ -115,11 +153,16 @@ int i = 1;
 
 
 
+  
+    
+
 
 int main()
 {
 
     int opc = 0;
+     
+     //vaciar();
 
     do
     {
