@@ -1,5 +1,7 @@
 #include <iostream>
 #include <malloc.h>
+#include <cstring>
+#include <algorithm>
 
 using namespace std;
 
@@ -21,17 +23,14 @@ struct corredor
 corredor *cab, *aux, *aux2;
 
 int numero;
-int contador = 0;
- 
-
-
 
 // REGISTRAR ATLETA
 
 int registrar()
 {
 
-    if (cab == NULL){
+    if (cab == NULL)
+    {
 
         cab = (struct corredor *)malloc(sizeof(struct corredor));
 
@@ -42,8 +41,6 @@ int registrar()
         cin >> cab->nasignado;
 
         cab->sig = NULL;
-
-
     }
     else
     {
@@ -60,7 +57,7 @@ int registrar()
 
         while (aux2->sig != NULL)
 
-            aux2 = aux2->sig;
+        aux2 = aux2->sig;
         aux2->sig = aux;
         aux2 = aux = NULL;
         free(aux);
@@ -72,8 +69,6 @@ int registrar()
 int correr()
 {
 
-    
-
     aux = (struct corredor *)malloc(sizeof(struct corredor));
 
     aux->sig = NULL;
@@ -83,44 +78,37 @@ int correr()
     cout << "INGRESE NUMERO DE CAMISETA DEL CORREDOR: ";
     cin >> camisa;
 
-    
-
     for (aux2 = cab; aux2 != NULL; aux2 = aux2->sig)
     {
         if (camisa == aux2->nasignado)
         {
             if (aux2->estruc2.promedio == 1)
             {
-               cout<<"ESTE ATLETA NO PUEDE REGISTRAR MAS CARRERAS";
+                cout << "ESTE ATLETA NO PUEDE REGISTRAR MAS CARRERAS";
                 encontrado = true;
-                 break;
+                break;
             }
-            
-            if(aux2->estruc2.contador == 555){
+
+            if (aux2->estruc2.contador == 555)
+            {
                 int segundotime;
-                 cout << "INGRESE TIEMPO: ";
+                cout << "INGRESE TIEMPO: ";
                 cin >> segundotime;
-                int resultado =  (aux2->estruc2.time + segundotime) / 2;
+                int resultado = (aux2->estruc2.time + segundotime) / 2;
                 aux2->estruc2.time = resultado;
                 aux2->estruc2.promedio = 1;
-                 encontrado = true;
-                  aux2 = aux = NULL;
+                encontrado = true;
+                aux2 = aux = NULL;
                 cout << "Registro Exitoso";
-
                 break;
             }
-
-                cout << "INGRESE TIEMPO: ";
-                cin >> aux2->estruc2.time;
-                encontrado = true;
-                aux2->estruc2.contador = 555;
-                aux2 = aux = NULL;
-
-                cout << "Registro Exitoso";
-
-                break;
-          
-            
+            cout << "INGRESE TIEMPO: ";
+            cin >> aux2->estruc2.time;
+            encontrado = true;
+            aux2->estruc2.contador = 555;
+            aux2 = aux = NULL;
+            cout << "Registro Exitoso";
+            break;
         }
     }
 
@@ -133,8 +121,6 @@ int correr()
 
 int mostrar()
 {
-    
-
 
     int i = 1;
     int j = 0;
@@ -151,19 +137,42 @@ int mostrar()
     return 0;
 }
 
+void ordenar_FIFO_desc(struct corredor *inicio)
+{
+    struct corredor *actual = inicio;
+    while (actual != NULL)
+    {
+        struct corredor *mayor = actual;
+        struct corredor *sig = actual->sig;
+        while (sig != NULL)
+        {
+            if (sig->estruc2.time > mayor->estruc2.time)
+            {
+                mayor = sig;
+            }
+            sig = sig->sig;
+        }
+        int temp = actual->estruc2.time;
+        int tamp = actual->nasignado;
+        char nom[20];
+        memcpy(nom, actual->nombre, 20);
 
+        actual->estruc2.time = mayor->estruc2.time;
+        mayor->estruc2.time = temp;
 
-  
-    
+        actual->nasignado = mayor->nasignado;
+        mayor->nasignado = tamp;
 
+        memcpy(actual->nombre, mayor->nombre, 20);
+        memcpy(mayor->nombre, nom, 20);
+        actual = actual->sig;
+    }
+}
 
 int main()
 {
 
     int opc = 0;
-     
-     //vaciar();
-
     do
     {
         cout << endl;
@@ -187,7 +196,7 @@ int main()
 
             break;
         case 3:
-
+            ordenar_FIFO_desc(cab);
             mostrar();
 
             break;
