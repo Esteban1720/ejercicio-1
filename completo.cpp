@@ -8,8 +8,8 @@ using namespace std;
 struct Times
 {
     int contador = 0;
-    int time;
-    int promedio = 0;
+    double time[100];
+    double promedio = 0;
 };
 
 struct corredor
@@ -39,6 +39,12 @@ int registrar()
 
         cout << "INGRESE NUMERO DE CAMISETA: ";
         cin >> cab->nasignado;
+        cab->estruc2.time[100] = {0};
+        for (int i = 0; i < 100; i++)
+        {
+            cab->estruc2.time[i] = 0;
+        }
+        cab->estruc2.contador = 0;
 
         cab->sig = NULL;
     }
@@ -51,6 +57,12 @@ int registrar()
 
         cout << "INGRESE NUMERO DE CAMISETA: ";
         cin >> aux->nasignado;
+        aux->estruc2.time[100] = {0};
+        for (int i = 0; i < 100; i++)
+        {
+            aux->estruc2.time[i] = 0;
+        }
+        aux->estruc2.contador = 0;
 
         aux->sig = NULL;
         aux2 = cab;
@@ -68,7 +80,9 @@ int registrar()
 
 int correr()
 {
-
+    double tiempo;
+    double siguiente = 0;
+    double resultado;
     aux = (struct corredor *)malloc(sizeof(struct corredor));
 
     aux->sig = NULL;
@@ -82,33 +96,39 @@ int correr()
     {
         if (camisa == aux2->nasignado)
         {
-            if (aux2->estruc2.promedio == 1)
-            {
-                cout << "ESTE ATLETA NO PUEDE REGISTRAR MAS CARRERAS";
-                encontrado = true;
-                break;
-            }
+            
+            cout << "INGRESE TIEMPO: ";
+            cin >> tiempo;
+            int contador = 0;
+            contador += aux2->estruc2.contador;
+            aux2->estruc2.time[contador] = tiempo;
+            aux2->estruc2.contador++;
+            encontrado = true;
 
-            if (aux2->estruc2.contador == 555)
+            for (int i = 0; i < 100; i++)
             {
-                int segundotime;
-                cout << "INGRESE TIEMPO: ";
-                cin >> segundotime;
-                int resultado = (aux2->estruc2.time + segundotime) / 2;
-                aux2->estruc2.time = resultado;
-                aux2->estruc2.promedio = 1;
-                encontrado = true;
+                double actual = aux2->estruc2.time[i];
+                resultado = (actual + siguiente);
+                siguiente = resultado;
+            }
+            if (aux2->estruc2.contador == 1)
+            {
+                double promedio = resultado;
+                aux2->estruc2.promedio = promedio;
+
+                aux2 = aux = NULL;
+                cout << "Registro Exitoso";
+                break;
+            }else{
+                int cantidad = 0;
+                cantidad = aux2->estruc2.contador;
+
+                double promedio = resultado/cantidad;
+                aux2->estruc2.promedio = promedio;
                 aux2 = aux = NULL;
                 cout << "Registro Exitoso";
                 break;
             }
-            cout << "INGRESE TIEMPO: ";
-            cin >> aux2->estruc2.time;
-            encontrado = true;
-            aux2->estruc2.contador = 555;
-            aux2 = aux = NULL;
-            cout << "Registro Exitoso";
-            break;
         }
     }
 
@@ -130,7 +150,7 @@ int mostrar()
 
     for (aux = cab; aux != NULL; aux = aux->sig)
     {
-        cout << i++ << ".corredor  camisa #" << aux->nasignado << " Nombre: " << aux->nombre << "  Tiempo: " << aux->estruc2.time << endl;
+        cout << i++ << ".corredor  camisa #" << aux->nasignado << " Nombre: " << aux->nombre << "  Tiempo: " << aux->estruc2.promedio << endl;
         j++;
     }
 
@@ -146,19 +166,19 @@ void ordenar_FIFO_desc(struct corredor *inicio)
         struct corredor *sig = actual->sig;
         while (sig != NULL)
         {
-            if (sig->estruc2.time > mayor->estruc2.time)
+            if (sig->estruc2.promedio > mayor->estruc2.promedio)
             {
                 mayor = sig;
             }
             sig = sig->sig;
         }
-        int temp = actual->estruc2.time;
+        double temp = actual->estruc2.promedio;
         int tamp = actual->nasignado;
         char nom[20];
         memcpy(nom, actual->nombre, 20);
 
-        actual->estruc2.time = mayor->estruc2.time;
-        mayor->estruc2.time = temp;
+        actual->estruc2.promedio = mayor->estruc2.promedio;
+        mayor->estruc2.promedio = temp;
 
         actual->nasignado = mayor->nasignado;
         mayor->nasignado = tamp;
