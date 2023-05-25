@@ -23,45 +23,51 @@ corredor *cab, *aux, *aux2, *raiz, *auxA, *auxA2;
 
 int numero;
 int i = 0;
-
+int arbol = 0;
 
 // Calcula la altura de un nodo
-int calcularAltura(corredor* nodo) {
+int calcularAltura(corredor *nodo)
+{
     if (nodo == NULL)
         return 0;
     return 1 + max(calcularAltura(nodo->izquierdo), calcularAltura(nodo->derecho));
 }
 
 // Realiza una rotación simple a la derecha
-void rotacionSimpleDerecha(corredor*& nodo) {
-    corredor* aux = nodo->izquierdo;
+void rotacionSimpleDerecha(corredor *&nodo)
+{
+    corredor *aux = nodo->izquierdo;
     nodo->izquierdo = aux->derecho;
     aux->derecho = nodo;
     nodo = aux;
 }
 
 // Realiza una rotación simple a la izquierda
-void rotacionSimpleIzquierda(corredor*& nodo) {
-    corredor* aux = nodo->derecho;
+void rotacionSimpleIzquierda(corredor *&nodo)
+{
+    corredor *aux = nodo->derecho;
     nodo->derecho = aux->izquierdo;
     aux->izquierdo = nodo;
     nodo = aux;
 }
 
 // Realiza una rotación doble a la derecha
-void rotacionDobleDerecha(corredor*& nodo) {
+void rotacionDobleDerecha(corredor *&nodo)
+{
     rotacionSimpleIzquierda(nodo->izquierdo);
     rotacionSimpleDerecha(nodo);
 }
 
 // Realiza una rotación doble a la izquierda
-void rotacionDobleIzquierda(corredor*& nodo) {
+void rotacionDobleIzquierda(corredor *&nodo)
+{
     rotacionSimpleDerecha(nodo->derecho);
     rotacionSimpleIzquierda(nodo);
 }
 
 // Realiza el balanceo del árbol AVL
-void balancearArbol(corredor*& nodo) {
+void balancearArbol(corredor *&nodo)
+{
     if (nodo == NULL)
         return;
 
@@ -69,7 +75,8 @@ void balancearArbol(corredor*& nodo) {
     int alturaDer = calcularAltura(nodo->derecho);
     int diferenciaAltura = alturaDer - alturaIzq;
 
-    if (diferenciaAltura > 1) {
+    if (diferenciaAltura > 1)
+    {
         // Desbalance hacia la derecha
         int alturaDerDer = calcularAltura(nodo->derecho->derecho);
         int alturaDerIzq = calcularAltura(nodo->derecho->izquierdo);
@@ -77,7 +84,9 @@ void balancearArbol(corredor*& nodo) {
             rotacionSimpleIzquierda(nodo);
         else
             rotacionDobleIzquierda(nodo);
-    } else if (diferenciaAltura < -1) {
+    }
+    else if (diferenciaAltura < -1)
+    {
         // Desbalance hacia la izquierda
         int alturaIzqIzq = calcularAltura(nodo->izquierdo->izquierdo);
         int alturaIzqDer = calcularAltura(nodo->izquierdo->derecho);
@@ -92,9 +101,7 @@ void balancearArbol(corredor*& nodo) {
     balancearArbol(nodo->derecho);
 }
 
-
-
-//FUNCION PARTE DEL REGISTRO EN EL ARBOL
+// FUNCION PARTE DEL REGISTRO EN EL ARBOL
 int posicionar()
 {
     if (auxA->promedio < auxA2->promedio)
@@ -120,16 +127,10 @@ int posicionar()
     return 0;
 }
 
-
-
-
-
-
-//REGISTRA EL CALCULO DEL PROMEDIO EN EL ARBOL
+// REGISTRA EL CALCULO DEL PROMEDIO EN EL ARBOL
 int registrarArbol(corredor *fifo)
 {
 
-    auxA = (struct corredor *)malloc(sizeof(struct corredor));
     auxA = fifo;
 
     auxA->izquierdo = auxA->derecho = NULL;
@@ -162,10 +163,13 @@ int registrar()
 
         cout << "INGRESE NUMERO DE CAMISETA: ";
         cin >> cab->nasignado;
+
         cab->contador = 0;
         cab->promedio = 0;
         cab->sematemp = 0;
         cab->time = 0;
+
+        cout << "Registro Exitoso" << endl;
 
         cab->sig = NULL;
     }
@@ -178,10 +182,24 @@ int registrar()
 
         cout << "INGRESE NUMERO DE CAMISETA: ";
         cin >> aux->nasignado;
+
+        // Validar número de camiseta único
+        for (corredor *temp = cab; temp != NULL; temp = temp->sig)
+        {
+            if (aux->nasignado == temp->nasignado)
+            {
+                cout << "El numero de camiseta ya existe. Ingrese un numero de camiseta unico." << endl;
+                free(aux);
+
+                return 0;
+            }
+        }
         aux->contador = 0;
         aux->promedio = 0;
         aux->sematemp = 0;
         aux->time = 0;
+
+        cout << "Registro Exitoso" << endl;
 
         aux->sig = NULL;
         aux2 = cab;
@@ -198,7 +216,6 @@ int registrar()
     return 0;
 }
 
-
 int correr()
 {
 
@@ -212,7 +229,6 @@ int correr()
     {
         if (camisa == aux->nasignado)
         {
-          
             if (aux->contador == 1)
             {
                 int multime;
@@ -221,6 +237,15 @@ int correr()
                      << "DE VUELTA"
                      << "  " << aux->contador << ":";
                 cin >> multime;
+                // Validar tiempo positivo
+                if (multime < 0)
+                {
+                    cout << "El tiempo ingresado no puede ser negativo. Ingrese un tiempo valido." << endl;
+                    aux->contador--;
+                    aux = aux2 = NULL;
+                    return 0;
+                }
+
                 aux->sematemp = (aux->sematemp + multime);
                 int resultado = (aux->sematemp) / 2;
                 aux->promedio = resultado;
@@ -229,18 +254,29 @@ int correr()
                 encontrado = true;
                 aux = aux2 = NULL;
                 cout << "Registro Exitoso";
+                arbol++;
                 i++;
                 break;
             }
-              if (aux->contador > 1)
+            if (aux->contador > 1)
             {
                 int multime;
                 aux->contador++;
-                   
+
                 cout << "INGRESE TIEMPO "
                      << "DE VUELTA"
                      << "  " << aux->contador << ":";
                 cin >> multime;
+
+                // Validar tiempo positivo
+                if (multime < 0)
+                {
+                    cout << "El tiempo ingresado no puede ser negativo. Ingrese un tiempo valido." << endl;
+                    aux->contador--;
+                    aux = aux2 = NULL;
+                    return 0;
+                }
+
                 aux->sematemp = (aux->sematemp + multime);
                 int resultado = (aux->sematemp) / 2;
                 aux->promedio = resultado;
@@ -250,6 +286,7 @@ int correr()
                 encontrado = true;
                 aux = aux2 = NULL;
                 cout << "Registro Exitoso";
+                arbol++;
                 i++;
                 break;
             }
@@ -265,9 +302,20 @@ int correr()
                      << "DE VUELTA "
                      << "  " << aux->contador << ":";
                 cin >> aux->time;
+                int multime = aux->time;
+                // Validar tiempo positivo
+                if (multime < 0)
+                {
+                    cout << "El tiempo ingresado no puede ser negativo. Ingrese un tiempo valido." << endl;
+                    aux->contador--;
+                    aux = aux2 = NULL;
+                    return 0;
+                }
+
                 encontrado = true;
                 aux = NULL;
                 cout << "Registro Exitoso";
+                arbol++;
                 break;
             }
         }
@@ -283,6 +331,12 @@ int correr()
 // MUESTRA DE MENOR A MAYOR
 int inorden(corredor *recursive)
 {
+
+    if (arbol == 0)
+    {
+        cout << "EL ARBOL ESTA VACIO" << endl;
+        return 0;
+    }
 
     if (recursive->izquierdo != NULL)
     {
@@ -360,16 +414,21 @@ void ordenar_FIFO_desc(struct corredor *inicio)
     }
 }
 
-
 int main()
 {
+    cab = NULL;
+    aux = NULL;
+    aux2 = NULL;
+    raiz = NULL;
+    auxA = NULL;
+    auxA2 = NULL;
 
     int opc = 0;
     do
     {
         cout << endl;
         cout << endl;
-        cout << "<<  SISTEMA DE ATLETAS  >>" << endl;
+        cout << "<<  SISTEMA DE CORREDORES  >>" << endl;
         cout << endl;
         cout << "1.REGISTRAR CORREDOR" << endl;
         cout << "2.REGISTRAR VUELTAS ARBOL & ARREGLO" << endl;
@@ -399,14 +458,14 @@ int main()
             break;
 
         case 5:
-
+            cout << "Hasta Pronto" << endl;
             break;
 
         default:
             break;
         }
 
-    } while (opc != 7);
+    } while (opc != 5);
 
     return 0;
 }
