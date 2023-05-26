@@ -218,10 +218,10 @@ int registrar()
 
 int correr()
 {
-
     aux = cab;
     int camisa;
     bool encontrado = false;
+    
     cout << "INGRESE NUMERO DE CAMISETA DEL CORREDOR: ";
     cin >> camisa;
 
@@ -229,104 +229,60 @@ int correr()
     {
         if (camisa == aux->nasignado)
         {
-            if (aux->contador == 1)
+            encontrado = true;
+
+            if (aux->contador == 0)
             {
-                int multime;
+                // Primera vuelta
                 aux->contador++;
-                cout << "INGRESE TIEMPO "
-                     << "DE VUELTA"
-                     << "  " << aux->contador << ":";
-                cin >> multime;
-                // Validar tiempo positivo
-                if (multime < 0)
-                {
-                    cout << "El tiempo ingresado no puede ser negativo. Ingrese un tiempo valido." << endl;
-                    aux->contador--;
-                    aux = aux2 = NULL;
-                    return 0;
-                }
-
-                aux->sematemp = (aux->sematemp + multime);
-                int resultado = (aux->sematemp) / 2;
-                aux->promedio = resultado;
-                aux->time = (multime);
-                registrarArbol(aux);
-                encontrado = true;
-                aux = aux2 = NULL;
-                cout << "Registro Exitoso";
-                arbol++;
-                i++;
-                break;
-            }
-            if (aux->contador > 1)
-            {
-                int multime;
-                aux->contador++;
-
-                cout << "INGRESE TIEMPO "
-                     << "DE VUELTA"
-                     << "  " << aux->contador << ":";
-                cin >> multime;
-
-                // Validar tiempo positivo
-                if (multime < 0)
-                {
-                    cout << "El tiempo ingresado no puede ser negativo. Ingrese un tiempo valido." << endl;
-                    aux->contador--;
-                    aux = aux2 = NULL;
-                    return 0;
-                }
-
-                aux->sematemp = (aux->sematemp + multime);
-                int resultado = (aux->sematemp) / 2;
-                aux->promedio = resultado;
-                aux->time = (multime);
-                registrarArbol(aux);
-                balancearArbol(raiz);
-                encontrado = true;
-                aux = aux2 = NULL;
-                cout << "Registro Exitoso";
-                arbol++;
-                i++;
-                break;
-            }
-
-            else
-            {
-                int x = 1;
-                int y = aux->contador;
-
-                aux->contador = x + y;
-
-                cout << "INGRESE TIEMPO "
-                     << "DE VUELTA "
-                     << "  " << aux->contador << ":";
+                cout << "INGRESE TIEMPO DE VUELTA " << aux->contador << ": ";
                 cin >> aux->time;
-                int multime = aux->time;
+
                 // Validar tiempo positivo
-                if (multime < 0)
+                if (aux->time < 0)
                 {
-                    cout << "El tiempo ingresado no puede ser negativo. Ingrese un tiempo valido." << endl;
+                    cout << "El tiempo ingresado no puede ser negativo. Ingrese un tiempo válido." << endl;
                     aux->contador--;
-                    aux = aux2 = NULL;
                     return 0;
                 }
 
-                encontrado = true;
-                aux = NULL;
-                cout << "Registro Exitoso";
+                // Actualizar promedio y registrar en el árbol AVL
+                aux->sematemp = aux->time;
+                aux->promedio = aux->time;
+                registrarArbol(aux);
                 arbol++;
                 break;
             }
+            
+            // Vuelta posterior a la primera
+            aux->contador++;
+            cout << "INGRESE TIEMPO DE VUELTA " << aux->contador << ": ";
+            cin >> aux->time;
+
+            // Validar tiempo positivo
+            if (aux->time < 0)
+            {
+                cout << "El tiempo ingresado no puede ser negativo. Ingrese un tiempo válido." << endl;
+                aux->contador--;
+                return 0;
+            }
+
+            aux->sematemp += aux->time;
+            aux->promedio = aux->sematemp / aux->contador;
+            registrarArbol(aux);
+            balancearArbol(raiz);
+            arbol++;
+            break;
         }
     }
 
-    if (encontrado == false)
-    {
-        printf("No se encontro el atleta");
-    }
+    if (!encontrado)
+    
+        cout << "No se encontró el atleta";
     return 0;
 }
+
+
 
 // MUESTRA DE MENOR A MAYOR
 int inorden(corredor *recursive)
