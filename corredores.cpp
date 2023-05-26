@@ -434,7 +434,7 @@ int main()
         cout << "2.REGISTRAR VUELTAS ARBOL & ARREGLO" << endl;
         cout << "3.MOSTRAR ARREGLO" << endl;
         cout << "4.MOSTRAR DE MENOR A MAYOR ARBOL" << endl;
-        cout << "SALIR" << endl;
+        cout << "5.SALIR" << endl;
         cin >> opc;
 
         switch (opc)
