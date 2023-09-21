@@ -1,126 +1,162 @@
+#include <stdio.h>
 #include <iostream>
 #include <cstring>
 
 using namespace std;
 
-struct Corredor
+struct corredor
 {
     char nombre[40];
-    char apellido[40];
-    int tiempo_100m;
-    Corredor* siguiente;
+    float tiempo100m = 0.0;
+    corredor* siguiente;
 };
 
-Corredor* cabeza = nullptr;
+corredor* cabeza = NULL, * actual = NULL, * siguiente = NULL;
 
-void RegistrarCorredor()
+void ordenar_FIFO_asc()
 {
-    system("cls");
-
-    Corredor* nuevoCorredor = new Corredor;
-
-    cout << "<<<<<<<REGISTRO DE CORREDORES DE 100 METROS>>>>>>" << endl;
-    cout << endl;
-
-    cout << "Ingresa el nombre: ";
-    cin >> nuevoCorredor->nombre;
-
-    cout << "Ingresa el apellido: ";
-    cin >> nuevoCorredor->apellido;
-
-    cout << "Ingresa el tiempo en segundos para correr 100 metros: ";
-    cin >> nuevoCorredor->tiempo_100m;
-
-    nuevoCorredor->siguiente = nullptr;
-
-    if (cabeza == nullptr)
+    if (cabeza == NULL || cabeza->siguiente == NULL)
     {
-        cabeza = nuevoCorredor;
+        return;
     }
-    else
+
+    bool intercambio = true;
+
+    while (intercambio)
     {
-        Corredor* aux = cabeza;
-        while (aux->siguiente != nullptr)
+        intercambio = false;
+        actual = cabeza;
+
+        while (actual->siguiente != NULL)
         {
-            aux = aux->siguiente;
+            if (actual->tiempo100m > actual->siguiente->tiempo100m)
+            {
+                float tempTiempo = actual->tiempo100m;
+                actual->tiempo100m = actual->siguiente->tiempo100m;
+                actual->siguiente->tiempo100m = tempTiempo;
+
+                char tempNombre[40];
+                strcpy_s(tempNombre, sizeof(tempNombre), actual->nombre);
+                strcpy_s(actual->nombre, sizeof(actual->nombre), actual->siguiente->nombre);
+                strcpy_s(actual->siguiente->nombre, sizeof(actual->siguiente->nombre), tempNombre);
+
+                intercambio = true;
+            }
+
+            actual = actual->siguiente;
         }
-        aux->siguiente = nuevoCorredor;
     }
 }
 
-void MostrarCorredores()
+void mostrarMejorCorredor()
+{
+    if (cabeza == NULL)
+    {
+        cout << "No hay corredores registrados." << endl;
+        return;
+    }
+
+    corredor* mejorCorredor = cabeza;
+    actual = cabeza->siguiente;
+
+    while (actual != NULL)
+    {
+        if (actual->tiempo100m < mejorCorredor->tiempo100m)
+        {
+            mejorCorredor = actual;
+        }
+        actual = actual->siguiente;
+    }
+
+    cout << "Mejor corredor en tiempo:" << endl;
+    cout << "Nombre: " << mejorCorredor->nombre << endl;
+    cout << "Tiempo en 100 metros: " << mejorCorredor->tiempo100m << endl;
+}
+
+int registrarCorredor()
+{
+    system("cls");
+
+    if (cabeza == NULL)
+    {
+        cabeza = new corredor;
+
+        cout << "<<<REGISTRO DE CORREDORES>>>" << endl;
+        cout << endl;
+        cout << "Ingresa el nombre: ";
+        cin >> cabeza->nombre;
+
+        cout << "Ingresa el tiempo en 100 metros: ";
+        cin >> cabeza->tiempo100m;
+
+        cabeza->siguiente = NULL;
+    }
+    else
+    {
+        actual = new corredor;
+
+        cout << "<<<REGISTRO DE CORREDORES>>>" << endl;
+        cout << endl;
+        cout << "Ingresa el nombre: ";
+        cin >> actual->nombre;
+
+        cout << "Ingresa el tiempo en 100 metros: ";
+        cin >> actual->tiempo100m;
+
+        actual->siguiente = NULL;
+        siguiente = cabeza;
+
+        while (siguiente->siguiente != NULL)
+            siguiente = siguiente->siguiente;
+
+        siguiente->siguiente = actual;
+    }
+    return 0;
+}
+
+int mostrarCorredores()
 {
     system("cls");
     int i = 1;
 
-    cout << "<<<<<<<CORREDORES EN LA CARRERA DE 100 METROS>>>>>>" << endl;
+    cout << "<<<CORREDORES>>>" << endl;
+    cout << endl;
     cout << endl;
     cout << endl;
 
-    for (Corredor* aux = cabeza; aux != nullptr; aux = aux->siguiente)
+    for (actual = cabeza; actual != NULL; actual = actual->siguiente)
     {
         cout << "Corredor #" << i << endl;
-        cout << "Nombre: " << aux->nombre << endl;
-        cout << "Apellido: " << aux->apellido << endl;
-        cout << "Tiempo en segundos para correr 100 metros: " << aux->tiempo_100m << " segundos" << endl;
+        cout << "Nombre: " << actual->nombre << endl;
+        cout << "Tiempo en 100 metros: " << actual->tiempo100m << endl;
+        cout << endl;
         cout << endl;
         i++;
     }
+    return 0;
 }
 
-void MostrarMejorTiempo()
+void calcularPromedioYMostrar()
 {
     system("cls");
+    float sumaTiempos = 0.0;
+    int contador = 0;
 
-    if (cabeza == nullptr)
+    for (actual = cabeza; actual != NULL; actual = actual->siguiente)
     {
-        cout << "No hay corredores registrados." << endl;
-        return;
+        sumaTiempos += actual->tiempo100m;
+        contador++;
     }
 
-    int mejorTiempo = cabeza->tiempo_100m;
-    Corredor* corredorMejorTiempo = cabeza;
-
-    for (Corredor* aux = cabeza; aux != nullptr; aux = aux->siguiente)
+    if (contador > 0)
     {
-        if (aux->tiempo_100m < mejorTiempo)
-        {
-            mejorTiempo = aux->tiempo_100m;
-            corredorMejorTiempo = aux;
-        }
+        float promedio = sumaTiempos / contador;
+        cout << "El promedio de tiempos en 100 metros es: " << promedio << endl;
     }
-
-    cout << "<<<<<<<CORREDOR CON EL MEJOR TIEMPO>>>>>>" << endl;
-    cout << "Nombre: " << corredorMejorTiempo->nombre << endl;
-    cout << "Apellido: " << corredorMejorTiempo->apellido << endl;
-    cout << "Tiempo en segundos para correr 100 metros: " << corredorMejorTiempo->tiempo_100m << " segundos" << endl;
-    cout << endl;
-}
-
-void CalcularPromedio()
-{
-    system("cls");
-
-    if (cabeza == nullptr)
+    else
     {
-        cout << "No hay corredores registrados." << endl;
-        return;
+        cout << "No hay corredores registrados para calcular el promedio." << endl;
     }
-
-    int totalTiempos = 0;
-    int numCorredores = 0;
-
-    for (Corredor* aux = cabeza; aux != nullptr; aux = aux->siguiente)
-    {
-        totalTiempos += aux->tiempo_100m;
-        numCorredores++;
-    }
-
-    double promedio = static_cast<double>(totalTiempos) / numCorredores;
-
-    cout << "<<<<<<<PROMEDIO DE TIEMPO PARA CORRER 100 METROS>>>>>>" << endl;
-    cout << "Promedio: " << promedio << " segundos" << endl;
-    cout << endl;
 }
 
 int main()
@@ -132,46 +168,56 @@ int main()
         cout << endl;
         cout << "<<<MENU>>>" << endl;
         cout << endl;
-        cout << "1. Registrar Corredor" << endl;
-        cout << "2. Mostrar Corredores" << endl;
-        cout << "3. Mostrar Mejor Tiempo" << endl;
-        cout << "4. Calcular Promedio de Tiempo" << endl;
-        cout << "5. Salir" << endl;
+        cout << "1. REGISTRAR CORREDOR" << endl;
+        cout << "2. MOSTRAR CORREDORES" << endl;
+        cout << "3. MOSTRAR CORREDORES DE MENOR A MAYOR TIEMPO" << endl;
+        cout << "4. CALCULAR Y MOSTRAR PROMEDIO DE TIEMPOS" << endl;
+        cout << "5. MOSTRAR MEJOR TIEMPO" << endl;
+        cout << "6. SALIR" << endl;
         cin >> opc;
-
         switch (opc)
         {
         case 1:
-            RegistrarCorredor();
+            registrarCorredor();
             system("cls");
             break;
-
         case 2:
-            MostrarCorredores();
+            mostrarCorredores();
             system("pause");
             system("cls");
             break;
-
         case 3:
-            MostrarMejorTiempo();
+            ordenar_FIFO_asc();
+            cout << "Corredores ordenados de menor a mayor tiempo:" << endl;
+            mostrarCorredores();
             system("pause");
             system("cls");
             break;
-
         case 4:
-            CalcularPromedio();
+            calcularPromedioYMostrar();
             system("pause");
             system("cls");
             break;
-
         case 5:
-            cout << "¡Adiós!" << endl;
+            mostrarMejorCorredor();
+            system("pause");
+            system("cls");
             break;
-
+        case 6:
+            cout << "Adiós" << endl;
+            break;
         default:
             break;
         }
-    } while (opc != 5);
+    } while (opc != 6);
+
+    while (cabeza != NULL)
+    {
+        actual = cabeza;
+        cabeza = cabeza->siguiente;
+        delete actual;
+    }
 
     return 0;
 }
+
