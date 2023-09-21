@@ -1,0 +1,304 @@
+#include <stdio.h>
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+struct nodo
+{
+    char val[40];
+    char ape[40];
+    int credito = 0;
+    int creditoGastado = 0;
+    nodo* sig;
+};
+
+nodo* cab, * aux, * aux2;
+
+int registrar() {
+    system("cls");
+
+    if (cab == NULL) {
+        cab = (struct nodo*)malloc(sizeof(struct nodo));
+
+        cout << "<<<<<<<<REGISTRO DE CLIENTES>>>>>>>> ";
+        cout << endl;
+        cout << endl;
+
+        cout << "ingresa el nombre: ";
+        cin >> cab->val;
+
+        cout << "ingresa el apellido: ";
+        cin >> cab->ape;
+
+        cout << "ingresa cantidad de credito: ";
+        cin >> cab->credito;
+        cab->creditoGastado = 0;
+        cab->sig = NULL;
+    }
+    else {
+        aux = (struct nodo*)malloc(sizeof(struct nodo));
+
+        cout << "<<<<<<<<REGISTRO DE CLIENTES>>>>>>>> ";
+        cout << endl;
+        cout << endl;
+        cout << "ingresa el nombre: ";
+        cin >> aux->val;
+
+        cout << "ingresa el apellido: ";
+        cin >> aux->ape;
+
+        cout << "ingresa cantidad de credito: ";
+        cin >> aux->credito;
+
+        aux->creditoGastado = 0;
+
+        aux->sig = NULL;
+        aux2 = cab;
+
+        while (aux2->sig != NULL)
+            aux2 = aux2->sig;
+
+        aux2->sig = aux;
+        aux2 = aux = NULL;
+        free(aux);
+        free(aux2);
+    }
+    return 0;
+}
+
+int mostrarCupoMenor20() {
+    system("cls");
+    int i = 1;
+
+    cout << "<<<<<<<<CLIENTES CON CUPO MENOR AL 20% DEL CRÉDITO>>>>>>>";
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    for (aux = cab; aux != NULL; aux = aux->sig) {
+        int cupoDisponible = aux->credito - aux->creditoGastado;
+
+        if (cupoDisponible < 0.2 * aux->credito) {
+            cout << "Cliente #" << i << endl;
+            cout << "nombre : " << aux->val << endl;
+            cout << "apellido : " << aux->ape << endl;
+            cout << "credito : " << aux->credito << endl;
+            cout << "cupo disponible : " << cupoDisponible << endl;
+            cout << "credito gastado : " << aux->creditoGastado << endl;
+            cout << endl;
+            cout << endl;
+            i++;
+        }
+    }
+    return 0;
+}
+
+int mostrar() {
+    system("cls");
+    int i = 1;
+
+    cout << "<<<<<<<<CLIENTES>>>>>>>";
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    for (aux = cab; aux != NULL; aux = aux->sig) {
+        cout << "Cliente #" << i << endl;
+        cout << "nombre : " << aux->val << endl;
+        cout << "apellido : " << aux->ape << endl;
+        cout << "credito : " << aux->credito << endl;
+        cout << "cupo disponible : " << (aux->credito - aux->creditoGastado) << endl;
+        cout << "credito gastado : " << aux->creditoGastado << endl;
+        cout << endl;
+        cout << endl;
+        i++;
+    }
+    return 0;
+}
+
+int consumirCreditoPorNombre() {
+    system("cls");
+    char nombre[40];
+    int cantidad = 0;
+
+    cout << "<<<<<<<<CONSUMIR CRÉDITO DE UN CLIENTE POR NOMBRE>>>>>>>";
+    cout << endl;
+    cout << endl;
+    cout << "Ingrese el nombre del cliente: ";
+    cin >> nombre;
+
+    bool encontrado = false;
+    for (aux = cab; aux != NULL; aux = aux->sig) {
+        if (strcmp(aux->val, nombre) == 0) {
+            cout << "Cliente encontrado:" << endl;
+            cout << "nombre : " << aux->val << endl;
+            cout << "apellido : " << aux->ape << endl;
+            cout << "credito : " << aux->credito << endl;
+            cout << "cupo disponible : " << (aux->credito - aux->creditoGastado) << endl;
+            cout << "credito gastado : " << aux->creditoGastado << endl;
+
+            cout << "Ingrese la cantidad a consumir: ";
+            cin >> cantidad;
+
+            if (cantidad <= (aux->credito - aux->creditoGastado)) {
+                aux->creditoGastado += cantidad;
+                cout << "Consumo exitoso." << endl;
+            }
+            else {
+                cout << "La cantidad ingresada supera el cupo disponible." << endl;
+            }
+            encontrado = true;
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        cout << "Cliente no encontrado." << endl;
+    }
+
+    return 0;
+}
+
+int calcularCreditoPorCobrar() {
+    system("cls");
+    int totalCreditoPorCobrar = 0;
+
+    cout << "<<<<<<<<CALCULAR TOTAL DE CRÉDITO POR COBRAR>>>>>>>";
+    cout << endl;
+    cout << endl;
+
+    for (aux = cab; aux != NULL; aux = aux->sig) {
+        int creditoPendiente = aux->credito - aux->creditoGastado;
+        totalCreditoPorCobrar += creditoPendiente;
+    }
+
+    cout << "El total de crédito por cobrar es: " << totalCreditoPorCobrar << endl;
+    return 0;
+}
+
+void ordenarClientesPorCreditoAscendente() {
+    if (cab == NULL || cab->sig == NULL) {
+        return;
+    }
+
+    bool intercambio;
+    nodo* actual;
+    nodo* siguiente = NULL;
+
+    do {
+        intercambio = false;
+        actual = cab;
+
+        while (actual->sig != siguiente) {
+            nodo* siguienteCliente = actual->sig;
+
+            if (actual->credito > siguienteCliente->credito) {
+                int tempCredito = actual->credito;
+                int tempCreditoGastado = actual->creditoGastado;
+                char tempVal[40];
+                char tempApe[40];
+
+                strcpy_s(tempVal, sizeof(tempVal), actual->val);
+                strcpy_s(tempApe, sizeof(tempApe), actual->ape);
+
+                strcpy_s(actual->val, sizeof(actual->val), siguienteCliente->val);
+                strcpy_s(actual->ape, sizeof(actual->ape), siguienteCliente->ape);
+
+                actual->credito = siguienteCliente->credito;
+                actual->creditoGastado = siguienteCliente->creditoGastado;
+
+                strcpy_s(siguienteCliente->val, sizeof(siguienteCliente->val), tempVal);
+                strcpy_s(siguienteCliente->ape, sizeof(siguienteCliente->ape), tempApe);
+
+                siguienteCliente->credito = tempCredito;
+                siguienteCliente->creditoGastado = tempCreditoGastado;
+
+                intercambio = true;
+            }
+
+            actual = actual->sig;
+        }
+        siguiente = actual;
+
+    } while (intercambio);
+}
+
+void mostrarClientes() {
+    system("cls");
+    int i = 1;
+
+    cout << "<<<<<<<<CLIENTES ORDENADOS POR CRÉDITO ASCENDENTE (FIFO)>>>>>>>";
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    for (aux = cab; aux != NULL; aux = aux->sig) {
+        cout << "Cliente #" << i << endl;
+        cout << "nombre : " << aux->val << endl;
+        cout << "apellido : " << aux->ape << endl;
+        cout << "credito : " << aux->credito << endl;
+        cout << "cupo disponible : " << (aux->credito - aux->creditoGastado) << endl;
+        cout << "credito gastado : " << aux->creditoGastado << endl;
+        cout << endl;
+        cout << endl;
+        i++;
+    }
+}
+
+int main() {
+    int opc = 0;
+
+    do {
+        cout << endl;
+        cout << "<<<MENU>>>" << endl;
+        cout << endl;
+        cout << "1.REGISTRAR CLIENTES" << endl;
+        cout << "2.MOSTRAR CLIENTES" << endl;
+        cout << "3.MOSTRAR CLIENTES CON CUPO < 20%" << endl;
+        cout << "4.CONSUMIR CRÉDITO DE UN CLIENTE POR NOMBRE" << endl;
+        cout << "5.TOTAL DE CREDTOS POR COBRAR" << endl;
+        cout << "6.MOSTRAR ASCENDENTE" << endl;
+        cout << "7.SALIR." << endl;
+        cin >> opc;
+        switch (opc) {
+        case 1:
+            registrar();
+            system("cls");
+            break;
+        case 2:
+            mostrar();
+            system("pause");
+            system("cls");
+            break;
+        case 3:
+            mostrarCupoMenor20();
+            system("pause");
+            system("cls");
+            break;
+        case 4:
+            consumirCreditoPorNombre();
+            system("pause");
+            system("cls");
+            break;
+        case 5:
+            calcularCreditoPorCobrar();
+            system("pause");
+            system("cls");
+            break;
+
+
+        case 6:
+            ordenarClientesPorCreditoAscendente();
+            mostrarClientes();
+            system("pause");
+            system("cls");
+            break;
+
+        case 7:
+            cout << "adios" << endl;
+            break;
+
+        default:
+            cout << "Solo puedes seleccionar del 1 al 7" << endl;
+            break;
+        }
+    } while (opc != 7);
+}
