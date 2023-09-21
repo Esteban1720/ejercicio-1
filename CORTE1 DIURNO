@@ -1,0 +1,177 @@
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+struct Corredor
+{
+    char nombre[40];
+    char apellido[40];
+    int tiempo_100m;
+    Corredor* siguiente;
+};
+
+Corredor* cabeza = nullptr;
+
+void RegistrarCorredor()
+{
+    system("cls");
+
+    Corredor* nuevoCorredor = new Corredor;
+
+    cout << "<<<<<<<REGISTRO DE CORREDORES DE 100 METROS>>>>>>" << endl;
+    cout << endl;
+
+    cout << "Ingresa el nombre: ";
+    cin >> nuevoCorredor->nombre;
+
+    cout << "Ingresa el apellido: ";
+    cin >> nuevoCorredor->apellido;
+
+    cout << "Ingresa el tiempo en segundos para correr 100 metros: ";
+    cin >> nuevoCorredor->tiempo_100m;
+
+    nuevoCorredor->siguiente = nullptr;
+
+    if (cabeza == nullptr)
+    {
+        cabeza = nuevoCorredor;
+    }
+    else
+    {
+        Corredor* aux = cabeza;
+        while (aux->siguiente != nullptr)
+        {
+            aux = aux->siguiente;
+        }
+        aux->siguiente = nuevoCorredor;
+    }
+}
+
+void MostrarCorredores()
+{
+    system("cls");
+    int i = 1;
+
+    cout << "<<<<<<<CORREDORES EN LA CARRERA DE 100 METROS>>>>>>" << endl;
+    cout << endl;
+    cout << endl;
+
+    for (Corredor* aux = cabeza; aux != nullptr; aux = aux->siguiente)
+    {
+        cout << "Corredor #" << i << endl;
+        cout << "Nombre: " << aux->nombre << endl;
+        cout << "Apellido: " << aux->apellido << endl;
+        cout << "Tiempo en segundos para correr 100 metros: " << aux->tiempo_100m << " segundos" << endl;
+        cout << endl;
+        i++;
+    }
+}
+
+void MostrarMejorTiempo()
+{
+    system("cls");
+
+    if (cabeza == nullptr)
+    {
+        cout << "No hay corredores registrados." << endl;
+        return;
+    }
+
+    int mejorTiempo = cabeza->tiempo_100m;
+    Corredor* corredorMejorTiempo = cabeza;
+
+    for (Corredor* aux = cabeza; aux != nullptr; aux = aux->siguiente)
+    {
+        if (aux->tiempo_100m < mejorTiempo)
+        {
+            mejorTiempo = aux->tiempo_100m;
+            corredorMejorTiempo = aux;
+        }
+    }
+
+    cout << "<<<<<<<CORREDOR CON EL MEJOR TIEMPO>>>>>>" << endl;
+    cout << "Nombre: " << corredorMejorTiempo->nombre << endl;
+    cout << "Apellido: " << corredorMejorTiempo->apellido << endl;
+    cout << "Tiempo en segundos para correr 100 metros: " << corredorMejorTiempo->tiempo_100m << " segundos" << endl;
+    cout << endl;
+}
+
+void CalcularPromedio()
+{
+    system("cls");
+
+    if (cabeza == nullptr)
+    {
+        cout << "No hay corredores registrados." << endl;
+        return;
+    }
+
+    int totalTiempos = 0;
+    int numCorredores = 0;
+
+    for (Corredor* aux = cabeza; aux != nullptr; aux = aux->siguiente)
+    {
+        totalTiempos += aux->tiempo_100m;
+        numCorredores++;
+    }
+
+    double promedio = static_cast<double>(totalTiempos) / numCorredores;
+
+    cout << "<<<<<<<PROMEDIO DE TIEMPO PARA CORRER 100 METROS>>>>>>" << endl;
+    cout << "Promedio: " << promedio << " segundos" << endl;
+    cout << endl;
+}
+
+int main()
+{
+    int opc = 0;
+
+    do
+    {
+        cout << endl;
+        cout << "<<<MENU>>>" << endl;
+        cout << endl;
+        cout << "1. Registrar Corredor" << endl;
+        cout << "2. Mostrar Corredores" << endl;
+        cout << "3. Mostrar Mejor Tiempo" << endl;
+        cout << "4. Calcular Promedio de Tiempo" << endl;
+        cout << "5. Salir" << endl;
+        cin >> opc;
+
+        switch (opc)
+        {
+        case 1:
+            RegistrarCorredor();
+            system("cls");
+            break;
+
+        case 2:
+            MostrarCorredores();
+            system("pause");
+            system("cls");
+            break;
+
+        case 3:
+            MostrarMejorTiempo();
+            system("pause");
+            system("cls");
+            break;
+
+        case 4:
+            CalcularPromedio();
+            system("pause");
+            system("cls");
+            break;
+
+        case 5:
+            cout << "¡Adiós!" << endl;
+            break;
+
+        default:
+            break;
+        }
+    } while (opc != 5);
+
+    return 0;
+}
