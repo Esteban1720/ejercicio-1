@@ -1,0 +1,167 @@
+#include <stdio.h>
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+
+using namespace std;
+
+struct paciente
+{
+    char nombre[40];
+    int anioNacimiento;
+    bool atendido;
+    paciente* sig;
+};
+
+paciente* frente = nullptr;
+paciente* fin = nullptr;
+
+int registrarPaciente() {
+    system("cls");
+
+    paciente* nuevo = (paciente*)malloc(sizeof(paciente));
+
+    cout << "<<<REGISTRO DE PACIENTE>>>" << endl;
+    cout << endl;
+    cout << "Ingrese el nombre: ";
+    cin >> nuevo->nombre;
+
+    cout << "Ingrese el ano de nacimiento: ";
+    cin >> nuevo->anioNacimiento;
+
+    nuevo->atendido = false;
+    nuevo->sig = nullptr;
+
+    if (frente == nullptr) {
+        frente = fin = nuevo;
+    }
+    else {
+        fin->sig = nuevo;
+        fin = nuevo;
+    }
+
+    cout << "Paciente registrado correctamente." << endl;
+    return 0;
+}
+
+int atenderPaciente() {
+    system("cls");
+
+    if (frente == nullptr) {
+        cout << "No hay pacientes en espera." << endl;
+    }
+    else {
+        paciente* pacienteAtendido = frente;
+        frente = frente->sig;
+        pacienteAtendido->atendido = true;
+
+        cout << "<<<ATENCION DE PACIENTE>>>" << endl;
+        cout << endl;
+        cout << "Nombre: " << pacienteAtendido->nombre << endl;
+        cout << "Ano de nacimiento: " << pacienteAtendido->anioNacimiento << endl;
+        cout << "Paciente atendido." << endl;
+
+        free(pacienteAtendido);
+    }
+    return 0;
+}
+
+int abandonarFilaEspera() {
+    system("cls");
+
+    if (frente == nullptr) {
+        cout << "No hay pacientes en espera." << endl;
+    }
+    else {
+        char nombreAbandono[40];
+        cout << "Ingrese el nombre del paciente que desea abandonar la fila: ";
+        cin >> nombreAbandono;
+
+        paciente* anterior = nullptr;
+        paciente* actual = frente;
+
+        while (actual != nullptr) {
+            if (strcmp(actual->nombre, nombreAbandono) == 0) {
+                if (anterior == nullptr) {
+                    frente = actual->sig;
+                }
+                else {
+                    anterior->sig = actual->sig;
+                }
+                free(actual);
+                cout << "Paciente ha abandonado la fila de espera." << endl;
+                return 0;
+            }
+            anterior = actual;
+            actual = actual->sig;
+        }
+
+        cout << "No se encontro un paciente con ese nombre en la fila de espera." << endl;
+    }
+    return 0;
+}
+
+int mostrarPacientesEnEspera() {
+    system("cls");
+
+    cout << "<<<PACIENTES EN ESPERA>>>" << endl;
+    cout << endl;
+
+    if (frente == nullptr) {
+        cout << "No hay pacientes en espera." << endl;
+    }
+    else {
+        paciente* actual = frente;
+        int i = 1;
+
+        while (actual != nullptr) {
+            cout << "Paciente #" << i << endl;
+            cout << "Nombre: " << actual->nombre << endl;
+            cout << "Ano de nacimiento: " << actual->anioNacimiento << endl;
+            cout << (actual->atendido ? "Atendido" : "En espera") << endl;
+            cout << endl;
+            actual = actual->sig;
+            i++;
+        }
+    }
+    return 0;
+}
+
+int main() {
+    int opc = 0;
+
+    do {
+        cout << endl;
+        cout << "<<<MENU>>>" << endl;
+        cout << endl;
+        cout << "1. Registrar paciente" << endl;
+        cout << "2. Atender paciente" << endl;
+        cout << "3. Abandonar fila de espera por nombre" << endl;
+        cout << "4. Mostrar pacientes en espera" << endl;
+        cout << "5. Salir" << endl;
+        cin >> opc;
+
+        switch (opc) {
+        case 1:
+            registrarPaciente();
+            break;
+        case 2:
+            atenderPaciente();
+            break;
+        case 3:
+            abandonarFilaEspera();
+            break;
+        case 4:
+            mostrarPacientesEnEspera();
+            break;
+        case 5:
+            cout << "Hasta luego." << endl;
+            break;
+        default:
+            cout << "Opción no válida. Intente de nuevo." << endl;
+            break;
+        }
+    } while (opc != 5);
+
+    return 0;
+}
