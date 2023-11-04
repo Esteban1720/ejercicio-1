@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
+
+// Estructura que representa un contenedor
+struct Contenedor {
+    char codigo;
+    int prioridad;
+    Contenedor* izq;
+    Contenedor* der;
+};
+
+Contenedor* raiz = NULL; // Puntero a la raíz del árbol de contenedores
+
+// Función para insertar un contenedor en el árbol según su prioridad
+void posicionar(Contenedor*& nodo, char codigo, int prioridad) {
+    if (nodo == NULL) {
+        // Si el nodo es NULL, asignamos memoria para el nuevo contenedor y configuramos sus valores
+        nodo = (Contenedor*)malloc(sizeof(Contenedor));
+        nodo->codigo = codigo;
+        nodo->prioridad = prioridad;
+        nodo->izq = NULL;
+        nodo->der = NULL;
+    } else {
+        // Si el nodo no es NULL, determinamos si el nuevo contenedor debe ir a la izquierda o derecha según su prioridad
+        if (prioridad <= nodo->prioridad) {
+            posicionar(nodo->izq, codigo, prioridad - 1);
+        } else {
+            posicionar(nodo->der, codigo, prioridad);
+        }
+    }
+}
+
+// Función para insertar un nuevo contenedor solicitando código y prioridad al usuario
+void insertar() {
+    char codigo;
+    int prioridad;
+    cout << "Ingrese el codigo del contenedor: ";
+    cin >> codigo;
+    cout << "Ingrese la prioridad del contenedor: ";
+    cin >> prioridad;
+    posicionar(raiz, codigo, prioridad);
+}
+
+// Función para recorrer y mostrar los contenedores en orden de prioridad (de menor a mayor)
+void recorrerInOrder(Contenedor* nodo) {
+    if (nodo) {
+        recorrerInOrder(nodo->der); // Recorremos el subárbol derecho primero
+        cout << "Codigo: " << nodo->codigo << ", Prioridad: " << nodo->prioridad << endl;
+        recorrerInOrder(nodo->izq); // Luego recorremos el subárbol izquierdo
+    }
+}
+
+int main() {
+    int opc = 0;
+
+    do {
+        cout << "Menu:" << endl;
+        cout << "1: Registrar contenedor" << endl;
+        cout << "2: Recorrer contenedores en orden de prioridad" << endl;
+        cout << "3: Salir" << endl;
+        cin >> opc;
+
+        switch (opc) {
+        case 1:
+            insertar(); // Llama a la función para registrar un contenedor
+            break;
+        case 2:
+            cout << "Contenedores ordenados por prioridad (de mayor a menor):" << endl;
+            recorrerInOrder(raiz); // Llama a la función para mostrar los contenedores
+            break;
+        }
+    } while (opc != 3);
+
+    // Limpieza de memoria (deberias liberar la memoria de los nodos del arbol)
+    // Codigo de liberacion de memoria no incluido en este ejemplo.
+
+    return 0;
+}
